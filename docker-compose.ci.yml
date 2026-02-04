@@ -1,0 +1,24 @@
+services:
+  woodpecker-server:
+    image: woodpeckerci/woodpecker-server:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - woodpecker-data:/var/lib/woodpecker
+    environment:
+      - WOODPECKER_OPEN=true
+      - WOODPECKER_ADMIN=admin
+      - WOODPECKER_HOST=http://localhost:8000
+
+  woodpecker-agent:
+    image: woodpeckerci/woodpecker-agent:latest
+    depends_on:
+      - woodpecker-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Dockerの中でDockerを動かす
+    environment:
+      - WOODPECKER_SERVER=woodpecker-server:9000
+      - WOODPECKER_SECRET=secret_key_here # サーバーとエージェントを繋ぐ合言葉
+
+volumes:
+  woodpecker-data:

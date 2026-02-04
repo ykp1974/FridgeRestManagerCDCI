@@ -1,0 +1,23 @@
+# kind と name をあえて削除し、steps から開始します
+skip_clone: true
+
+steps:
+  install:
+    image: node:20
+    commands:
+      - npm install
+
+  test:
+    image: node:20
+    environment:
+      VITEST_POOL: forks
+      VITEST_MAX_FORKS: "1"
+      VITEST_MIN_FORKS: "1"
+      NO_COLOR: "true" # これで色が消えます
+    commands:
+      - npm run test -- --run
+
+  build:
+    image: node:20
+    commands:
+      - npm run build

@@ -1,0 +1,25 @@
+kind: pipeline
+name: test-pipeline
+
+steps:
+  install:
+    image: node:20
+    commands:
+      - npm install
+
+  test:
+    image: node:20
+    environment:
+      # 環境変数で Vitest の動作を制御（これが一番エラーが出にくいです）
+      VITEST_POOL: forks
+      VITEST_MAX_FORKS: "1"
+      VITEST_MIN_FORKS: "1"
+      NODE_OPTIONS: "--no-warnings"
+    commands:
+      # 引数を最小限にして実行
+      - npx vitest run --pool=forks
+
+  build:
+    image: node:20
+    commands:
+      - npm run build
