@@ -1,0 +1,34 @@
+## 指示
+現在、冷蔵庫の食材管理アプリであるが、
+食材を1つのカテゴリとし、新たにTODOをカテゴリとして登録・参照できるようにしたい。
+食材入力欄の上にリストボックスを追加し、要素を[食材, 100均一買い物, TODO]としたい。
+./.github/agents/00_orchestrator,md のルールに則り、改修プランを提示してください。
+## 出力
+MarkDown方式
+ファイル名：01-01_FixPlanRough.txt
+
+## 指示
+./.github/agents/10_planner,md のルールに則り、./.github/agents/30_coder.mdによるコーディングが
+スムーズに進められるよう、具体的な改修プランを詳細レベルで提示してください。
+## 出力
+MarkDown方式
+ファイル名：01-02_FixPlanDetail.txt
+
+## 指示
+./.github/agents/30_coder.md のルールに則り、./01-02_FixPlanDetail.txtの仕様に基づいてコーディングを行ってください。
+
+## 指示
+./.github/agents/50_reviewer.md のルールに則り、.生成されたコードのコードレビューを行ってください。
+## 出力
+MarkDown方式
+ファイル名：01-05_CodeReview.txt
+
+## 指示
+./.github/agents/30_coder.md のルールに則り、./01-05_CodeReview.mdのコードレビュー結果を反映して、修正を行ってください。
+
+## 指示
+./.github/agents/40_tester.md のルールに則り、今回修正に対応するテストコードを作成してください。
+今回修正前のテストコードについても、仕様に沿うよう、適宜修正を行ってください。
+## 出力
+MarkDown方式
+ファイル名：./Docs/01-06_TestCaseDesign.txt
