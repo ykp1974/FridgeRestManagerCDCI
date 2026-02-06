@@ -1,18 +1,26 @@
+import { useState, useMemo } from 'react';
 import { Layout } from './components/Layout';
 import { IngredientForm } from './components/IngredientForm';
 import { IngredientList } from './components/IngredientList';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { Ingredient } from './types/Ingredient';
+import { Ingredient, Category, FILTER_CATEGORIES } from './types/Ingredient';
 
 /**
  * メインアプリケーションコンポーネント
  */
 function App() {
   const { ingredients, error, addIngredient, removeIngredient } = useLocalStorage();
+  const [filterCategory, setFilterCategory] = useState<Category>('食材');
 
   const handleAddIngredient = (ingredient: Ingredient): boolean => {
     return addIngredient(ingredient);
   };
+
+  const filteredIngredients = useMemo(() => {
+    return ingredients.filter((ingredient) =>
+      filterCategory === 'すべて' ? true : ingredient.category === filterCategory
+    );
+  }, [ingredients, filterCategory]);
 
   return (
     <Layout>
@@ -25,10 +33,29 @@ function App() {
       <div className="space-y-6">
         <IngredientForm onSubmit={handleAddIngredient} />
         <div>
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">
-            食材一覧 ({ingredients.length}件)
-          </h2>
-          <IngredientList ingredients={ingredients} onRemove={removeIngredient} />
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">
+              アイテム一覧 ({ingredients.length}件)
+            </h2>
+            <div className="flex items-center space-x-2">
+              <label htmlFor="filterCategory" className="text-sm font-medium text-gray-700">
+                カテゴリで絞り込み:
+              </label>
+              <select
+                id="filterCategory"
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value as Category)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {FILTER_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <IngredientList ingredients={filteredIngredients} onRemove={removeIngredient} />
         </div>
       </div>
     </Layout>

@@ -22,8 +22,8 @@ export function IngredientList({ ingredients, onRemove }: IngredientListProps) {
   if (sortedIngredients.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500">
-        <p className="text-lg mb-2">まだ食材が登録されていません</p>
-        <p className="text-sm">下のフォームから食材を追加してください</p>
+        <p className="text-lg mb-2">まだアイテムが登録されていません</p>
+        <p className="text-sm">下のフォームからアイテムを追加してください</p>
       </div>
     );
   }

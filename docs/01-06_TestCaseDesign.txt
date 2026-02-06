@@ -1,0 +1,120 @@
+## 追加テスト一覧
+今回の修正に対応するため、以下の単体テストおよび統合テストの追加を推奨します。プロジェクトに既存のテストフレームワークがないため、`Vitest`と`@testing-library/react`を想定しています。
+
+- **`src/components/IngredientForm.tsx`** (統合テスト)
+- **`src/App.tsx`** (統合テスト)
+- **`src/components/IngredientItem.tsx`** (単体テスト)
+
+## 狙い
+
+### `src/components/IngredientForm.tsx`
+- **狙い**: カテゴリ選択ドロップダウンが正しく機能し、選択されたカテゴリが新しい食材オブジェクトに付与されること、およびフォームが正しくリセットされることを確認する。
+- **期待結果**:
+  - フォームレンダリング時にカテゴリドロップダウンが表示され、「食材」「100均一買い物」「TODO」のオプションが含まれていること。
+  - カテゴリを選択し、他のフィールドを入力してフォームを送信すると、`onSubmit`コールバックが正しいカテゴリ情報を含む`Ingredient`オブジェクトで呼び出されること。
+  - フォーム送信成功後、カテゴリドロップダウンが初期値の「食材」にリセットされること。
+  - 必須フィールド（アイテム名、期限）の入力検証がカテゴリ選択後も正しく機能すること。
+
+### `src/App.tsx`
+- **狙い**: カテゴリフィルタードロップダウンが期待通りに動作し、選択されたカテゴリに基づいて食材リストが正しくフィルタリングされることを確認する。また、`useMemo`フックが適切に利用されていることを検証する。
+- **期待結果**:
+  - `App`コンポーネントがレンダリングされ、カテゴリフィルタードロップダウンが表示されていること。
+  - 複数の異なるカテゴリの食材を追加した後、フィルタードロップダウンで「すべて」を選択すると全ての食材が表示されること。
+  - フィルタードロップダウンで特定のカテゴリ（例：「食材」）を選択すると、そのカテゴリに属する食材のみが表示されること。
+  - 他のカテゴリ（例：「100均一買い物」、「TODO」）を選択した場合も同様に、対応する食材のみが表示されること。
+  - （`useMemo`の利用はコードレビューで確認済みであり、パフォーマンス特性はプロファイリングで確認できるため、ここでは機能的な側面に焦点を当てます。）
+
+### `src/components/IngredientItem.tsx`
+- **狙い**: 各食材アイテムがそのカテゴリ情報を正しく表示することを確認する。
+- **期待結果**:
+  - `IngredientItem`コンポーネントが`category`プロパティを持つ`Ingredient`オブジェクトでレンダリングされた際、表示されるテキストに「カテゴリ: [設定されたカテゴリ名]」が含まれていること。
+
+## ローカル実行コマンド (概念的なもの、テスト環境セットアップが必要)
+プロジェクトにテスト環境がセットアップされていないため、以下のコマンドは`Vitest`と`@testing-library/react`がインストールおよび設定済みであることを前提とします。
+
+```bash
+# Vitestのインストールと設定
+# npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
+
+# テストファイルの作成と実行
+# 例えば、src/components/IngredientForm.test.tsx などのファイルを作成し、
+# 以下のコマンドで実行
+npx vitest
+# または
+npm test
+```
+
+## 難所と代替検証
+- **難所**:
+  - **テスト環境のセットアップ**: プロジェクトにテストフレームワークが導入されていないため、`Vitest`や`@testing-library/react`のインストールと設定、およびテストファイルを作成する必要があります。これは、本タスクの範囲外となる可能性があります。
+  - **`useLocalStorage`のモック**: `App.tsx`のテストでは、`useLocalStorage`フックがLocalStorageと直接やり取りするため、テストの分離のためにこのフックをモックする必要があるかもしれません。
+- **代替検証**:
+  - **手動での徹底的な確認**: テスト環境をセットアップしない場合でも、`01-06_CoderChangesForReviewFix.txt`に記載された「ローカル検証コマンド」の項目にある手動テスト手順を非常に詳細かつ網羅的に実行することで、新機能が正しく動作することを確認できます。特に、カテゴリの追加、フィルタリング、表示、フォームのリセット、データ永続化（ブラウザを閉じて再度開く）などを確認します。
+  - **コードレビューの再実施**: 手動検証と並行して、修正されたコードに対して再度詳細なコードレビューを実施し、意図した変更が正しく反映されているか、新たな問題が導入されていないかを確認します。
+
+---
+**テストコードの例 (IngredientForm.test.tsx):**
+```typescript
+// src/components/IngredientForm.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { IngredientForm } from './IngredientForm';
+import { ALL_CATEGORIES } from '../types/Ingredient';
+
+describe('IngredientForm', () => {
+  it('renders category dropdown and submits with selected category', async () => {
+    const onSubmit = vi.fn();
+    render(<IngredientForm onSubmit={onSubmit} />);
+
+    // カテゴリドロップダウンの存在と初期値を確認
+    const categorySelect = screen.getByLabelText(/カテゴリ \*/i);
+    expect(categorySelect).toBeInTheDocument();
+    expect(categorySelect).toHaveValue('食材');
+
+    // カテゴリオプションの確認
+    ALL_CATEGORIES.forEach(category => {
+      expect(screen.getByRole('option', { name: category })).toBeInTheDocument();
+    });
+
+    // カテゴリを選択
+    fireEvent.change(categorySelect, { target: { value: '100均一買い物' } });
+    expect(categorySelect).toHaveValue('100均一買い物');
+
+    // 他のフィールドを入力
+    const nameInput = screen.getByLabelText(/アイテム名 \*/i);
+    fireEvent.change(nameInput, { target: { value: '洗剤' } });
+    const expiryDateInput = screen.getByLabelText(/期限 \*/i);
+    fireEvent.change(expiryDateInput, { target: { value: '2025-12-31' } });
+
+    // フォームを送信
+    const addButton = screen.getByRole('button', { name: /追加/i });
+    fireEvent.click(addButton);
+
+    // onSubmitが正しい引数で呼び出されたことを確認
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: '洗剤',
+        expiryDate: '2025-12-31',
+        category: '100均一買い物',
+      })
+    );
+
+    // フォームがリセットされたことを確認
+    expect(nameInput).toHaveValue('');
+    expect(expiryDateInput).toHaveValue('');
+    expect(categorySelect).toHaveValue('食材'); // 初期値に戻る
+  });
+
+  it('shows error if name is empty', async () => {
+    const onSubmit = vi.fn();
+    render(<IngredientForm onSubmit={onSubmit} />);
+
+    const addButton = screen.getByRole('button', { name: /追加/i });
+    fireEvent.click(addButton);
+
+    expect(screen.getByText('アイテム名を入力してください')).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+});
+```

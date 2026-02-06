@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { Plus } from 'lucide-react';
-import { Ingredient } from '../types/Ingredient';
+import { Ingredient, Category, ALL_CATEGORIES } from '../types/Ingredient';
 
 interface IngredientFormProps {
   onSubmit: (ingredient: Ingredient) => boolean;
@@ -13,6 +13,7 @@ interface IngredientFormProps {
 export function IngredientForm({ onSubmit }: IngredientFormProps) {
   const [name, setName] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
+  const [category, setCategory] = useState<Category>('食材');
   const [error, setError] = useState<string | null>(null);
 
   // 入力検証: 日付フォーマットチェック
@@ -31,12 +32,12 @@ export function IngredientForm({ onSubmit }: IngredientFormProps) {
 
     // 入力検証
     if (!name.trim()) {
-      setError('食材名を入力してください');
+      setError('アイテム名を入力してください');
       return;
     }
 
     if (!expiryDate) {
-      setError('賞味期限を選択してください');
+      setError('期限を選択してください');
       return;
     }
 
@@ -51,6 +52,7 @@ export function IngredientForm({ onSubmit }: IngredientFormProps) {
       name: name.trim(),
       expiryDate,
       createdAt: new Date().toISOString(),
+      category: category,
     };
 
     // 親コンポーネントに通知
@@ -59,8 +61,9 @@ export function IngredientForm({ onSubmit }: IngredientFormProps) {
       // 成功時はフォームをリセット
       setName('');
       setExpiryDate('');
+      setCategory('食材');
     } else {
-      setError('食材の追加に失敗しました');
+      setError('アイテムの追加に失敗しました');
     }
   };
 
@@ -69,7 +72,7 @@ export function IngredientForm({ onSubmit }: IngredientFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-sm border">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">食材を追加</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">アイテムを追加</h2>
       
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
@@ -79,8 +82,26 @@ export function IngredientForm({ onSubmit }: IngredientFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+            カテゴリ *
+          </label>
+          <select
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value as Category)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            {ALL_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            食材名 *
+            アイテム名 *
           </label>
           <input
             type="text"
@@ -94,7 +115,7 @@ export function IngredientForm({ onSubmit }: IngredientFormProps) {
         </div>
         <div>
           <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700 mb-1">
-            賞味期限 *
+            期限 *
           </label>
           <input
             type="date"

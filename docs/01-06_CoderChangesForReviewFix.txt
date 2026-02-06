@@ -1,0 +1,145 @@
+## 変更ファイル一覧
+- `src/types/Ingredient.ts`:
+  - **変更理由**: カテゴリ文字列の重複定義を解消し、一元的な管理を可能にするため、`ALL_CATEGORIES` と `FILTER_CATEGORIES` という定数配列を定義しエクスポートしました。これにより、カテゴリの追加や変更が容易になり、タイプミスによるエラーのリスクを低減します。
+- `src/components/IngredientForm.tsx`:
+  - **変更理由**: `src/types/Ingredient.ts` で定義された `ALL_CATEGORIES` をインポートし、カテゴリ選択ドロップダウンのオプションを動的に生成するように修正しました。これにより、カテゴリ定義の重複が解消され、保守性が向上しました。
+- `src/App.tsx`:
+  - **変更理由**:
+    - `src/types/Ingredient.ts` で定義された `FILTER_CATEGORIES` をインポートし、カテゴリフィルターのドロップダウンオプションを動的に生成するように修正しました。
+    - `filteredIngredients` の計算を `useMemo` フックでラップしました。これにより、`ingredients` または `filterCategory` が変更されない限り、フィルタリング処理が再実行されなくなり、アプリケーションのパフォーマンスが向上します。
+
+## 実装方針
+- コードレビューの指摘に基づき、コード品質の向上とパフォーマンス最適化を行いました。
+- カテゴリ定義の一元化により、変更管理を容易にし、タイプミスを防ぐようにしました。
+- `useMemo` を導入することで、不要な再計算を避け、アプリケーションの応答性を維持するようにしました。
+
+## 主要差分の説明
+
+### `src/types/Ingredient.ts`
+```diff
+--- a/src/types/Ingredient.ts
++++ b/src/types/Ingredient.ts
+@@ -8,7 +8,10 @@
+   category: Category;
+ }
+ 
+-export type Category = '食材' | '100均一買い物' | 'TODO' | 'すべて';
++export type Category = '食材' | '100均一買い物' | 'TODO' | 'すべて';
++
++export const ALL_CATEGORIES = ['食材', '100均一買い物', 'TODO'] as const;
++export const FILTER_CATEGORIES = ['すべて', ...ALL_CATEGORIES] as const;
+ 
+ /**
+  * LocalStorage用のキー
+```
+
+### `src/components/IngredientForm.tsx`
+```diff
+--- a/src/components/IngredientForm.tsx
++++ b/src/components/IngredientForm.tsx
+@@ -1,7 +1,7 @@
+ import { useState, FormEvent } from 'react';
+ import { Plus } from 'lucide-react';
+-import { Ingredient, Category } from '../types/Ingredient';
++import { Ingredient, Category, ALL_CATEGORIES } from '../types/Ingredient';
+ 
+ interface IngredientFormProps {
+   onSubmit: (ingredient: Ingredient) => boolean;
+@@ -80,9 +80,11 @@
+             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+             required
+           >
+-            <option value="食材">食材</option>
+-            <option value="100均一買い物">100均一買い物</option>
+-            <option value="TODO">TODO</option>
++            {ALL_CATEGORIES.map((cat) => (
++              <option key={cat} value={cat}>
++                {cat}
++              </option>
++            ))}
+           </select>
+         </div>
+         <div>
+```
+
+### `src/App.tsx`
+```diff
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -1,13 +1,15 @@
+-import { useState } from 'react';
++import { useState, useMemo } from 'react';
+ import { Layout } from './components/Layout';
+ import { IngredientForm } from './components/IngredientForm';
+ import { IngredientList } from './components/IngredientList';
+ import { useLocalStorage } from './hooks/useLocalStorage';
+-import { Ingredient, Category } from './types/Ingredient';
++import { Ingredient, Category, FILTER_CATEGORIES } from './types/Ingredient';
+ 
+ /**
+  * メインアプリケーションコンポーネント
+  */
+ function App() {
+   const { ingredients, error, addIngredient, removeIngredient } = useLocalStorage();
+   const [filterCategory, setFilterCategory] = useState<Category>('食材');
+ 
+   const handleAddIngredient = (ingredient: Ingredient): boolean => {
+     return addIngredient(ingredient);
+   };
+ 
++  const filteredIngredients = useMemo(() => {
++    return ingredients.filter((ingredient) =>
++      filterCategory === 'すべて' ? true : ingredient.category === filterCategory
++    );
++  }, [ingredients, filterCategory]);
++
+   return (
+     <Layout>
+       {error && (
+@@ -35,9 +37,11 @@
+                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+               >
+-                <option value="すべて">すべて</option>
+-                <option value="食材">食材</option>
+-                <option value="100均一買い物">100均一買い物</option>
+-                <option value="TODO">TODO</option>
++                {FILTER_CATEGORIES.map((cat) => (
++                  <option key={cat} value={cat}>
++                    {cat}
++                  </option>
++                ))}
+               </select>
+             </div>
+           </div>
+
+```
+
+## ローカル検証コマンド
+以下のコマンドを実行して、変更が正しく機能することを確認してください。
+
+1.  **依存関係のインストール (初回または変更があった場合)**
+    ```bash
+    npm install
+    ```
+2.  **開発サーバーの起動**
+    ```bash
+    npm run dev
+    ```
+    ブラウザでアプリケーションを開き、以下の点を確認してください。
+    *   **食材追加フォーム**:
+        *   「カテゴリ」ドロップダウンが表示されていること。
+        *   ドロップダウンに「食材」「100均一買い物」「TODO」のオプションがあること。
+        *   いずれかのカテゴリを選択し、食材名と賞味期限を入力して「追加」ボタンをクリックすると、アイテムがリストに追加され、正しいカテゴリが関連付けられていること。
+        *   フォームがリセットされ、カテゴリ選択が「食材」に戻っていること。
+        *   既存の「食材名」と「賞味期限」の入力機能が正常に動作していること。
+    *   **食材一覧**:
+        *   リストの上に「カテゴリで絞り込み:」という新しいドロップダウンが表示されていること。
+        *   このドロップダウンに「すべて」「食材」「100均一買い物」「TODO」のオプションがあること。
+        *   各アイテムの下に「カテゴリ: [選択されたカテゴリ]」が表示されていること。
+        *   フィルタードロップダウンでカテゴリを選択すると、リストに表示されるアイテムがそのカテゴリに絞り込まれること。「すべて」を選択すると、すべてのアイテムが表示されること。
+
+3.  **コンパイルエラーのチェック**
+    ```bash
+    npm run build
+    ```
+    このコマンドでビルドが成功し、コンパイルエラーがないことを確認してください。

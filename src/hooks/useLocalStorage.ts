@@ -55,7 +55,7 @@ export function useLocalStorage() {
   const addIngredient = (ingredient: Ingredient) => {
     // 入力検証: 必須フィールドチェック
     if (!ingredient.name.trim() || !ingredient.expiryDate) {
-      setError('食材名と賞味期限は必須です');
+      setError('アイテム名と期限は必須です');
       return false;
     }
     const updated = [...ingredients, ingredient];
