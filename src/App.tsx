@@ -31,7 +31,6 @@ function App() {
       )}
 
       <div className="space-y-6">
-        <IngredientForm onSubmit={handleAddIngredient} />
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-800">
@@ -57,6 +56,7 @@ function App() {
           </div>
           <IngredientList ingredients={filteredIngredients} onRemove={removeIngredient} />
         </div>
+        <IngredientForm onSubmit={handleAddIngredient} />
       </div>
     </Layout>
   );
