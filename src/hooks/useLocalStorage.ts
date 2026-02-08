@@ -52,15 +52,15 @@ export function useLocalStorage() {
   };
 
   // 追加
-  const addIngredient = (ingredient: Ingredient) => {
+  const addIngredient = (ingredient: Ingredient): Ingredient | null => {
     // 入力検証: 必須フィールドチェック
     if (!ingredient.name.trim() || !ingredient.expiryDate) {
       setError('アイテム名と期限は必須です');
-      return false;
+      return null;
     }
     const updated = [...ingredients, ingredient];
     saveIngredients(updated);
-    return true;
+    return ingredient; // Return the added ingredient on success
   };
 
   // 削除

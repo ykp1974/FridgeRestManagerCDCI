@@ -13,7 +13,12 @@ function App() {
   const [filterCategory, setFilterCategory] = useState<Category>('食材');
 
   const handleAddIngredient = (ingredient: Ingredient): boolean => {
-    return addIngredient(ingredient);
+    const addedIngredient = addIngredient(ingredient);
+    if (addedIngredient) {
+      setFilterCategory(addedIngredient.category);
+      return true;
+    }
+    return false;
   };
 
   const filteredIngredients = useMemo(() => {
