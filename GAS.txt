@@ -1,0 +1,8 @@
+新しいデプロイ
+デプロイを更新しました。
+バージョン 1（2026/02/08 20:19）
+デプロイ ID
+AKfycbyT7zXjkfDNm0ch8ej72otlHxrxhH3odwqudqBbZisuKqmC4cVyOSWBwdQkU6M5M0s
+ウェブアプリ
+URL
+https://script.google.com/macros/s/AKfycbyT7zXjkfDNm0ch8ej72otlHxrxhH3odwqudqBbZisuKqmC4cVyOSWBwdQkU6M5M0s/exec

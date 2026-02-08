@@ -4,7 +4,7 @@ import { IngredientForm } from './components/IngredientForm';
 import { IngredientList } from './components/IngredientList';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { Ingredient, Category, FILTER_CATEGORIES } from './types/Ingredient';
-
+import { CategoryList } from './components/CategoryList';
 /**
  * メインアプリケーションコンポーネント
  */
@@ -37,6 +37,10 @@ function App() {
 
       <div className="space-y-6">
         <div>
+          <div className="mb-4">
+            <h1>Category</h1>
+            <CategoryList />
+          </div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-800">
               アイテム一覧 ({ingredients.length}件)
