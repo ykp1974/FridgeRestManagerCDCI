@@ -41,6 +41,30 @@ function App() {
     return fetchedCategories.length > 0 ? fetchedCategories.map(cat => cat.name) : ['食材'];
   }, [fetchedCategories]);
 
+  // 1. 保存用関数を定義
+  const saveToSpreadsheet = async () => {
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbz8OTAlrVLKILXZv01DkmeOpQa0-nLlP7XfEwZk_cNDgPb4DSRAhaOTqyY0gKKBNOU/exec"; // 末尾が /exec であることを確認
+    const testData = { message: "テスト成功", value: 123 };
+
+    try {
+      await fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors", // これによりブラウザのCORSチェックをスキップします
+        cache: "no-cache",
+        headers: {
+          // 重要：ここをあえて空にするか、Content-Typeを指定しない
+        },
+        body: JSON.stringify(testData),
+      });
+
+      // no-corsモードではレスポンスの中身は読めませんが、
+      // ここまで来れば送信処理自体はブラウザから投げられています。
+      alert("送信処理を投げました。スプシを確認してください。");
+    } catch (e) {
+      console.error("ネットワークエラー:", e);
+    }
+  };
+
   return (
     <Layout>
       {error && (
@@ -79,6 +103,14 @@ function App() {
           <IngredientList ingredients={filteredIngredients} onRemove={removeIngredient} />
         </div>
         <IngredientForm onSubmit={handleAddIngredient} availableCategories={ingredientFormCategories} />
+
+        {/* 2. テスト用ボタンを配置 */}
+        <button 
+          onClick={saveToSpreadsheet}
+          style={{ marginTop: '20px', padding: '10px', backgroundColor: '#4CAF50', color: 'white' }}
+        >
+          スプシにテストデータを保存
+        </button>
       </div>
     </Layout>
   );
