@@ -1,28 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { fetchCategories } from '../api/categories';
+import { FetchedCategory } from '../types/Ingredient'; // Import FetchedCategory
 
-type Category = {
-  id: number;
-  name: string;
-};
+interface CategoryListProps {
+  onCategoriesFetched: (categories: FetchedCategory[]) => void;
+}
 
-export function CategoryList() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-
+export function CategoryList({ onCategoriesFetched }: CategoryListProps) {
   useEffect(() => {
     fetchCategories()
-      .then(data => setCategories(data))
-      .finally(() => setLoading(false));
-  }, []);
+      .then(data => {
+        onCategoriesFetched(data); // Pass fetched categories to the callback
+      })
+      .catch(error => {
+        console.error("Failed to fetch categories:", error);
+        // Optionally handle error by passing an empty array or specific error state
+        onCategoriesFetched([]);
+      });
+  }, [onCategoriesFetched]); // Dependency array includes onCategoriesFetched
 
-  if (loading) return <div>Loading...</div>;
-
-  return (
-    <ul>
-      {categories.map(cat => (
-        <li key={cat.id}>{cat.name}</li>
-      ))}
-    </ul>
-  );
+  return null; // This component no longer renders anything visible
 }
