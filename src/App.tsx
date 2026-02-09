@@ -43,7 +43,7 @@ function App() {
 
   // 1. 保存用関数を定義
   const saveToSpreadsheet = async () => {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz8OTAlrVLKILXZv01DkmeOpQa0-nLlP7XfEwZk_cNDgPb4DSRAhaOTqyY0gKKBNOU/exec"; // 末尾が /exec であることを確認
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxseybdn_bT571zy6UxL4BNyU39WT62xKorYRCzmhrQINYC75BnzITsqi5mmezI0gM/exec"; // 末尾が /exec であることを確認
     const testData = { message: "テスト成功", value: 123 };
 
     try {
