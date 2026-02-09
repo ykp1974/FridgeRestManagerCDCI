@@ -1,20 +1,29 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { Plus } from 'lucide-react';
-import { Ingredient, Category, ALL_CATEGORIES } from '../types/Ingredient';
+import { Ingredient, Category } from '../types/Ingredient';
 
 interface IngredientFormProps {
   onSubmit: (ingredient: Ingredient) => boolean;
+  availableCategories: string[]; // New prop for dynamic categories
 }
 
 /**
  * 食材追加フォームコンポーネント
  * 入力検証: 必須フィールドチェック、日付フォーマット検証
  */
-export function IngredientForm({ onSubmit }: IngredientFormProps) {
+export function IngredientForm({ onSubmit, availableCategories }: IngredientFormProps) {
   const [name, setName] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
-  const [category, setCategory] = useState<Category>('食材');
+  // Initialize category state with the first available category or a default
+  const [category, setCategory] = useState<Category>(availableCategories[0] || '食材');
   const [error, setError] = useState<string | null>(null);
+
+  // Update category state if availableCategories change and current category is no longer valid
+  useEffect(() => {
+    if (availableCategories.length > 0 && !availableCategories.includes(category)) {
+      setCategory(availableCategories[0]);
+    }
+  }, [availableCategories, category]);
 
   // 入力検証: 日付フォーマットチェック
   const validateDate = (dateString: string): boolean => {
@@ -92,7 +101,7 @@ export function IngredientForm({ onSubmit }: IngredientFormProps) {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
-            {ALL_CATEGORIES.map((cat) => (
+            {availableCategories.map((cat) => (
               <option key={cat} value={cat}>
                 {cat}
               </option>

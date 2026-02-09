@@ -1,0 +1,25 @@
+kind: pipeline
+name: test-pipeline
+
+# ローカル実行時にコンテナへファイルを同期させるために必須
+skip_clone: true 
+
+steps:
+  install:
+    image: node:20
+    commands:
+      - [cite_start]npm install [cite: 9]
+
+  test:
+    image: node:20
+    environment:
+      VITEST_POOL: forks
+      VITEST_MAX_FORKS: "1"
+      VITEST_MIN_FORKS: "1"
+    commands:
+      - [cite_start]npm run test -- --run [cite: 9]
+
+  build:
+    image: node:20
+    commands:
+      - [cite_start]npm run build [cite: 9, 16]

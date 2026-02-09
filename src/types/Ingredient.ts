@@ -1,3 +1,8 @@
+export interface FetchedCategory {
+  id: number;
+  name: string;
+}
+
 /**
  * 食材エンティティの型定義
  */
@@ -9,12 +14,6 @@ export interface Ingredient {
   category: Category;
 }
 
-export type Category = '食材' | '100均一買い物' | 'TODO' | 'すべて';
+export type Category = string;
 
-export const ALL_CATEGORIES = ['食材', '100均一買い物', 'TODO'] as const;
-export const FILTER_CATEGORIES = ['すべて', ...ALL_CATEGORIES] as const;
-
-/**
- * LocalStorage用のキー
- */
 export const STORAGE_KEY = 'fridge-ingredients';
