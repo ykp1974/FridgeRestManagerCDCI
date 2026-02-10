@@ -4,26 +4,39 @@ import { Ingredient, Category } from '../types/Ingredient';
 
 interface IngredientFormProps {
   onSubmit: (ingredient: Ingredient) => boolean;
-  availableCategories: string[]; // New prop for dynamic categories
+  availableCategories: string[];
+  // New prop: the category that should be pre-selected based on parent's search target
+  defaultCategory: Category; // App.tsx から filterCategory を受け取る
 }
 
 /**
  * 食材追加フォームコンポーネント
  * 入力検証: 必須フィールドチェック、日付フォーマット検証
  */
-export function IngredientForm({ onSubmit, availableCategories }: IngredientFormProps) {
+export function IngredientForm({
+  onSubmit,
+  availableCategories,
+  defaultCategory // Accept the new prop
+}: IngredientFormProps) {
   const [name, setName] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
-  // Initialize category state with the first available category or a default
-  const [category, setCategory] = useState<Category>(availableCategories[0] || '食材');
+
+  // Initialize category state, prioritizing defaultSelectedCategory if provided and valid.
+  const [category, setCategory] = useState<Category>(
+    defaultCategory && availableCategories.includes(defaultCategory)
+      ? defaultCategory
+      : availableCategories[0] || '食材'
+  );
   const [error, setError] = useState<string | null>(null);
 
-  // Update category state if availableCategories change and current category is no longer valid
+  // 追加：親のフィルタカテゴリ（defaultCategory）が変更されたら、フォームの選択も同期する
   useEffect(() => {
-    if (availableCategories.length > 0 && !availableCategories.includes(category)) {
-      setCategory(availableCategories[0]);
+    // 'すべて' が選択されている場合は、無理に同期せず現在の値を維持するか、
+    // 最初の有効なカテゴリをセットする(いつ実行されるかはさておき、実行された時にやってほしいこと)
+    if (defaultCategory !== 'すべて' && availableCategories.includes(defaultCategory)) {
+      setCategory(defaultCategory);
     }
-  }, [availableCategories, category]);
+  }, [defaultCategory, availableCategories]); // 監視する値(ここに書かれた値が 「前回レンダリングした時と比べて、少しでも変わったか？」 をReactがチェック)
 
   // 入力検証: 日付フォーマットチェック
   const validateDate = (dateString: string): boolean => {
@@ -70,7 +83,7 @@ export function IngredientForm({ onSubmit, availableCategories }: IngredientForm
       // 成功時はフォームをリセット
       setName('');
       setExpiryDate('');
-      setCategory('食材');
+      // setCategory('食材');
     } else {
       setError('アイテムの追加に失敗しました');
     }

@@ -102,7 +102,7 @@ function App() {
           </div>
           <IngredientList ingredients={filteredIngredients} onRemove={removeIngredient} />
         </div>
-        <IngredientForm onSubmit={handleAddIngredient} availableCategories={ingredientFormCategories} />
+        <IngredientForm onSubmit={handleAddIngredient} availableCategories={ingredientFormCategories} defaultCategory={filterCategory}/>{/* defaultCategory追加：現在のフィルタ値を渡す */}
 
         {/* 2. テスト用ボタンを配置 */}
         <button 
