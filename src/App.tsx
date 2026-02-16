@@ -3,15 +3,14 @@ import { Layout } from './components/Layout';
 import { IngredientForm } from './components/IngredientForm';
 import { IngredientList } from './components/IngredientList';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { Ingredient, Category, FetchedCategory } from './types/Ingredient'; // Import FetchedCategory
+import { Ingredient, Category, FetchedCategory } from './types/Ingredient';
 import { CategoryList } from './components/CategoryList';
-/**
- * メインアプリケーションコンポーネント
- */
+
 function App() {
-  const { ingredients, error, addIngredient, removeIngredient } = useLocalStorage();
-  const [filterCategory, setFilterCategory] = useState<Category>('食材');
-  const [fetchedCategories, setFetchedCategories] = useState<FetchedCategory[]>([]); // State for fetched categories
+  // useLocalStorage から setIngredients も取り出す
+  const { ingredients, error, addIngredient, removeIngredient, setIngredients } = useLocalStorage();
+  const [filterCategory, setFilterCategory] = useState<Category>('すべて'); 
+  const [fetchedCategories, setFetchedCategories] = useState<FetchedCategory[]>([]);
 
   const handleCategoriesFetched = useCallback((categories: FetchedCategory[]) => {
     setFetchedCategories(categories);
@@ -41,30 +40,6 @@ function App() {
     return fetchedCategories.length > 0 ? fetchedCategories.map(cat => cat.name) : ['食材'];
   }, [fetchedCategories]);
 
-  // 1. 保存用関数を定義
-  // const saveToSpreadsheet = async () => {
-  //   const GAS_URL = "https://script.google.com/macros/s/AKfycbxseybdn_bT571zy6UxL4BNyU39WT62xKorYRCzmhrQINYC75BnzITsqi5mmezI0gM/exec"; // 末尾が /exec であることを確認
-  //   const testData = { message: "テスト成功", value: 123 };
-
-    // try {
-    //   await fetch(GAS_URL, {
-    //     method: "POST",
-    //     mode: "no-cors", // これによりブラウザのCORSチェックをスキップします
-    //     cache: "no-cache",
-    //     headers: {
-    //       // 重要：ここをあえて空にするか、Content-Typeを指定しない
-    //     },
-    //     body: JSON.stringify(testData),
-    //   });
-
-    //   // no-corsモードではレスポンスの中身は読めませんが、
-    //   // ここまで来れば送信処理自体はブラウザから投げられています。
-    //   alert("送信処理を投げました。スプシを確認してください。");
-    // } catch (e) {
-    //   console.error("ネットワークエラー:", e);
-    // }
-  // };
-
   return (
     <Layout>
       {error && (
@@ -73,7 +48,6 @@ function App() {
         </div>
       )}
 
-      {/* CategoryList component is now responsible for fetching data, not rendering */}
       <CategoryList onCategoriesFetched={handleCategoriesFetched} />
 
       <div className="space-y-6">
@@ -89,7 +63,7 @@ function App() {
               <select
                 id="filterCategory"
                 value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value as Category)} // Cast to Category
+                onChange={(e) => setFilterCategory(e.target.value as Category)}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {filterOptions.map((cat) => (
@@ -100,18 +74,18 @@ function App() {
               </select>
             </div>
           </div>
-          <IngredientList ingredients={filteredIngredients} onRemove={removeIngredient} />
+          {/* ここで確実に渡す */}
+          <IngredientList 
+            ingredients={filteredIngredients} 
+            onRemove={removeIngredient} 
+            setIngredients={setIngredients} 
+          />
         </div>
-        <IngredientForm onSubmit={handleAddIngredient} availableCategories={ingredientFormCategories} defaultCategory={filterCategory}/>{/* defaultCategory追加：現在のフィルタ値を渡す */}
-
-        {/* 2. テスト用ボタンを配置 */}
-
-        {/* <button 
-          onClick={saveToSpreadsheet}
-          style={{ marginTop: '20px', padding: '10px', backgroundColor: '#4CAF50', color: 'white' }}
-        > */}
-          {/* スプシにテストデータを保存
-        </button> */}
+        <IngredientForm 
+          onSubmit={handleAddIngredient} 
+          availableCategories={ingredientFormCategories} 
+          defaultCategory={filterCategory}
+        />
       </div>
     </Layout>
   );

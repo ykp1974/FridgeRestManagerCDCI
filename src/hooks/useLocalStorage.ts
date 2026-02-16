@@ -83,5 +83,6 @@ export function useLocalStorage() {
     addIngredient,
     removeIngredient,
     updateIngredient,
+    setIngredients: saveIngredients, // ★ここを追加
   };
 }

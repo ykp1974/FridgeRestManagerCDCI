@@ -1,13 +1,37 @@
 import { Ingredient } from '../types/Ingredient';
 
-const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyT7zXjkfDNm0ch8ej72otlHxrxhH3odwqudqBbZisuKqmC4cVyOSWBwdQkU6M5M0s/exec';
+export const fetchIngredientsFromSpreadsheet = async () => {
+  const url = import.meta.env.VITE_GAS_API_URL;
+  
+  // URLに ?type=ingredients を付与して、doGet側で分岐させる
+  const fetchUrl = `${url}?type=ingredients`;
+
+  try {
+    const response = await fetch(fetchUrl, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch ingredients from Spreadsheet');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching ingredients:", error);
+    throw error;
+  }
+};
 
 export const syncIngredientsToSpreadsheet = async (ingredients: Ingredient[]): Promise<void> => {
+  const url = import.meta.env.VITE_GAS_API_URL;
+  
   try {
-    const response = await fetch(GAS_WEB_APP_URL, {
+    const response = await fetch(url, {
       method: 'POST',
+      mode: 'cors', // または省略
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/plain',
       },
       body: JSON.stringify(ingredients),
     });
