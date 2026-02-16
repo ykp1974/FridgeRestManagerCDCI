@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="8" failures="0" errors="0" time="0.0078926">
-    <testsuite name="src/utils/colorUtils.test.ts" timestamp="2026-02-04T06:29:57.648Z" hostname="DESKTOP-9CUTRIS" tests="8" failures="0" errors="0" skipped="0" time="0.0078926">
-        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryColorClass &gt; 期限切れは赤" time="0.0023656">
+<testsuites name="vitest tests" tests="12" failures="0" errors="0" time="0.0150246">
+    <testsuite name="tests/IngredientList.test.tsx" timestamp="2026-02-10T09:22:21.781Z" hostname="DESKTOP-9CUTRIS" tests="4" failures="0" errors="0" skipped="0" time="0.0046426">
+        <testcase classname="tests/IngredientList.test.tsx" name="複数選択検索機能 &gt; 検索クエリ生成ロジック &gt; 単一カテゴリの場合、末尾の語を付加する" time="0.0013406">
         </testcase>
-        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryColorClass &gt; 2日以内はオレンジ" time="0.0004035">
+        <testcase classname="tests/IngredientList.test.tsx" name="複数選択検索機能 &gt; 検索クエリ生成ロジック &gt; 複数カテゴリの場合、ダイアログが表示される" time="0.0002759">
         </testcase>
-        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryColorClass &gt; 1週間以内は黄色" time="0.0004009">
+        <testcase classname="tests/IngredientList.test.tsx" name="複数選択検索機能 &gt; 検索クエリ生成ロジック &gt; 末尾の語は重複しないこと" time="0.0001721">
         </testcase>
-        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryColorClass &gt; それ以外は緑" time="0.0005085">
+        <testcase classname="tests/IngredientList.test.tsx" name="複数選択検索機能 &gt; 検索クエリ生成ロジック &gt; TODOカテゴリの場合、末尾の語を付加しない" time="0.0004532">
         </testcase>
-        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryBadgeText &gt; 期限切れ" time="0.0004416">
+    </testsuite>
+    <testsuite name="src/utils/colorUtils.test.ts" timestamp="2026-02-10T09:22:21.790Z" hostname="DESKTOP-9CUTRIS" tests="8" failures="0" errors="0" skipped="0" time="0.010382">
+        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryColorClass &gt; 期限切れは赤" time="0.0029299">
         </testcase>
-        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryBadgeText &gt; 今日期限" time="0.0003543">
+        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryColorClass &gt; 2日以内はオレンジ" time="0.0006025">
         </testcase>
-        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryBadgeText &gt; 明日期限" time="0.0002695">
+        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryColorClass &gt; 1週間以内は黄色" time="0.0005403">
         </testcase>
-        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryBadgeText &gt; あとN日" time="0.000144">
+        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryColorClass &gt; それ以外は緑" time="0.0006856">
+        </testcase>
+        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryBadgeText &gt; 期限切れ" time="0.0006751">
+        </testcase>
+        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryBadgeText &gt; 今日期限" time="0.0007168">
+        </testcase>
+        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryBadgeText &gt; 明日期限" time="0.0003938">
+        </testcase>
+        <testcase classname="src/utils/colorUtils.test.ts" name="colorUtils &gt; getExpiryBadgeText &gt; あとN日" time="0.00032">
         </testcase>
     </testsuite>
 </testsuites>
