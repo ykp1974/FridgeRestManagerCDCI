@@ -114,7 +114,7 @@ export function IngredientList({ ingredients, onRemove, setIngredients }: Ingred
           `}
           disabled={isSyncing || isLoading}
         >
-          {isSyncing ? '同期中...' : 'スプレッドシートに同期'}
+          {isSyncing ? '同期中...' : 'スプレッドシートに保存'}
         </button>
       </div>
 
