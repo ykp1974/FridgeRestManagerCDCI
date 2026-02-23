@@ -14,6 +14,7 @@ function App() {
   const [filterCategory, setFilterCategory] = useState<Category>('すべて'); 
   const [fetchedCategories, setFetchedCategories] = useState<FetchedCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(false); // 読み込み中フラグ
 
   const handleCategoriesFetched = useCallback((categories: FetchedCategory[]) => {
     setFetchedCategories(categories);
@@ -28,6 +29,7 @@ function App() {
     if (!isInitialMount.current) return;
 
     const initData = async () => {
+      setIsInitialLoading(true); // モーダル表示開始      
       try {
         const data = await fetchIngredientsFromSpreadsheet();
         if (data && data.length > 0) {
@@ -36,11 +38,10 @@ function App() {
       } catch (err) {
         console.error("起動時の同期失敗:", err);
       } finally {
-        // 処理が終わったらフラグを倒す
-        isInitialMount.current = false;
+        setIsInitialLoading(false); // モーダル非表示
+        isInitialMount.current = false; // 処理が終わったらフラグを倒す
       }
     };
-
     initData();
   }, [setIngredients]);
 
@@ -124,6 +125,22 @@ function App() {
           availableCategories={ingredientFormCategories} 
           defaultCategory={filterCategory}
         />
+        {/* --- 猫のローディングモーダル --- */}
+        {isInitialLoading && (
+          <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-900 bg-opacity-60 backdrop-blur-sm">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center">
+              {/* ここに既存の猫画像コンポーネント、または <img> タグ */}
+              <img 
+                src="/cat_loading.gif" 
+                alt="Loading..." 
+                className="w-32 h-32 mb-4"
+              />
+              <p className="text-gray-600 font-bold animate-pulse">
+                スプレッドシートから最新情報を取得中...
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );
