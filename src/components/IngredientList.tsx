@@ -12,9 +12,10 @@ interface IngredientListProps {
   onRemove: (id: string) => void;
   // ここを (data: Ingredient[]) => void にして、フックの関数と型を合わせます
   setIngredients: (ingredients: Ingredient[]) => void;
+  showMsg: (text: string) => void;
 }
 
-export function IngredientList({ ingredients, onRemove, setIngredients }: IngredientListProps) {
+export function IngredientList({ ingredients, onRemove, setIngredients, showMsg }: IngredientListProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSyncing, setIsSyncing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +31,8 @@ export function IngredientList({ ingredients, onRemove, setIngredients }: Ingred
       // await syncIngredientsToSpreadsheet(storedIngredients);
       await syncIngredientsToSpreadsheet(ingredients);
 
-      alert('アイテムがスプレッドシートに正常に同期されました。');
+      showMsg('アイテムがスプレッドシートに正常に同期されました。');
+      
     } catch (error) {
       console.error('同期エラー:', error);
       setSyncError('アイテムのスプレッドシートへの同期に失敗しました。');
@@ -52,7 +54,7 @@ export function IngredientList({ ingredients, onRemove, setIngredients }: Ingred
       // 親から渡された関数を実行（これで App 側のステートと LocalStorage が更新される）
       setIngredients(data);
       
-      alert('スプレッドシートからデータを読み込みました。');
+      showMsg('スプレッドシートからデータを読み込みました。');
     } catch (error) {
       console.error('読み込みエラー:', error);
       setSyncError('スプレッドシートからの読み込みに失敗しました。');

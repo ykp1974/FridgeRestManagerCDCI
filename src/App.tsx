@@ -16,10 +16,17 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialLoading, setIsInitialLoading] = useState(false); // 読み込み中フラグ
 
+  const [msg, setMsg] = useState('');
+    const showMsg = (text: string) => {
+      setMsg(text);
+      setTimeout(() => setMsg(''), 3000);
+  };
+
   const handleCategoriesFetched = useCallback((categories: FetchedCategory[]) => {
     setFetchedCategories(categories);
     setIsLoading(false);
   }, []);
+  
 
   // 1. 起動済みかどうかを管理するフラグ（useRefを使用）
   const isInitialMount = useRef(true);
@@ -34,9 +41,11 @@ function App() {
         const data = await fetchIngredientsFromSpreadsheet();
         if (data && data.length > 0) {
           setIngredients(data);
+          showMsg('最新データを読み込みました');
         }
       } catch (err) {
         console.error("起動時の同期失敗:", err);
+        showMsg('最新データ読み込みに失敗しました');
       } finally {
         setIsInitialLoading(false); // モーダル非表示
         isInitialMount.current = false; // 処理が終わったらフラグを倒す
@@ -70,7 +79,7 @@ function App() {
   }, [ingredients, filterCategory]);
 
   const ingredientFormCategories = useMemo(() => {
-    return fetchedCategories.length > 0 ? fetchedCategories.map(cat => cat.name) : ['食材'];
+    return fetchedCategories.length > 0 ? fetchedCategories.map(cat => cat.name) : ['伝言'];
   }, [fetchedCategories]);
 
   return (
@@ -118,6 +127,7 @@ function App() {
             ingredients={filteredIngredients} 
             onRemove={removeIngredient} 
             setIngredients={setIngredients} 
+            showMsg={showMsg}
           />
         </div>
         <IngredientForm 
@@ -142,6 +152,11 @@ function App() {
           </div>
         )}
       </div>
+      {msg && (
+        <div className="fixed bottom-5 right-5 z-[100] bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg border border-gray-600">
+          {msg}
+        </div>
+      )}      
     </Layout>
   );
 }
