@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Ingredient } from '../types/Ingredient';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+// import { useLocalStorage } from '../hooks/useLocalStorage';
 import { syncIngredientsToSpreadsheet, fetchIngredientsFromSpreadsheet } from '../api/spreadsheet';
 import { getDaysUntilExpiry } from '../utils/dateUtils';
 import { IngredientItem } from './IngredientItem';
@@ -21,13 +21,15 @@ export function IngredientList({ ingredients, onRemove, setIngredients }: Ingred
   const [syncError, setSyncError] = useState<string | null>(null);
 
   // useLocalStorage から同期用のデータを取得
-  const { ingredients: storedIngredients } = useLocalStorage();
+  // const { ingredients: storedIngredients } = useLocalStorage();
 
   const handleSync = async () => {
     setIsSyncing(true);
     setSyncError(null);
     try {
-      await syncIngredientsToSpreadsheet(storedIngredients);
+      // await syncIngredientsToSpreadsheet(storedIngredients);
+      await syncIngredientsToSpreadsheet(ingredients);
+
       alert('アイテムがスプレッドシートに正常に同期されました。');
     } catch (error) {
       console.error('同期エラー:', error);
