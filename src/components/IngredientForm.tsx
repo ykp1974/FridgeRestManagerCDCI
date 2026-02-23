@@ -75,6 +75,7 @@ export function IngredientForm({
       expiryDate,
       createdAt: new Date().toISOString(),
       category: category,
+      isNew: true
     };
 
     // 親コンポーネントに通知

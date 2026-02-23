@@ -1,13 +1,15 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useEffect } from 'react';
+import { useRef } from 'react';
 import { Layout } from './components/Layout';
 import { IngredientForm } from './components/IngredientForm';
 import { IngredientList } from './components/IngredientList';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { Ingredient, Category, FetchedCategory } from './types/Ingredient';
+import { fetchIngredientsFromSpreadsheet } from './api/spreadsheet';
 import { CategoryList } from './components/CategoryList';
 
 function App() {
-  // useLocalStorage から setIngredients も取り出す
   const { ingredients, error, addIngredient, removeIngredient, setIngredients } = useLocalStorage();
   const [filterCategory, setFilterCategory] = useState<Category>('すべて'); 
   const [fetchedCategories, setFetchedCategories] = useState<FetchedCategory[]>([]);
@@ -18,8 +20,36 @@ function App() {
     setIsLoading(false);
   }, []);
 
+  // 1. 起動済みかどうかを管理するフラグ（useRefを使用）
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    // すでに一度実行されていたら何もしない
+    if (!isInitialMount.current) return;
+
+    const initData = async () => {
+      try {
+        const data = await fetchIngredientsFromSpreadsheet();
+        if (data && data.length > 0) {
+          setIngredients(data);
+        }
+      } catch (err) {
+        console.error("起動時の同期失敗:", err);
+      } finally {
+        // 処理が終わったらフラグを倒す
+        isInitialMount.current = false;
+      }
+    };
+
+    initData();
+  }, [setIngredients]);
+
   const handleAddIngredient = (ingredient: Ingredient): boolean => {
-    const addedIngredient = addIngredient(ingredient);
+    const newIngredient = {
+      ...ingredient,
+      isNew: true
+    };
+    const addedIngredient = addIngredient(newIngredient);
     if (addedIngredient) {
       setFilterCategory(addedIngredient.category);
       return true;
