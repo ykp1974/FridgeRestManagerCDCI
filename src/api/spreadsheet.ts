@@ -30,6 +30,7 @@ export const syncIngredientsToSpreadsheet = async (ingredients: Ingredient[]): P
     const response = await fetch(url, {
       method: 'POST',
       mode: 'cors', // または省略
+      redirect: 'follow', // GASのリダイレクトを追跡する      
       headers: {
         'Content-Type': 'text/plain',
       },
@@ -40,8 +41,13 @@ export const syncIngredientsToSpreadsheet = async (ingredients: Ingredient[]): P
       const errorText = await response.text();
       throw new Error(`Failed to sync ingredients: ${response.status} - ${errorText}`);
     }
-
-    console.log('Ingredients successfully synced to Google Spreadsheet.');
+    const resData = await response.json();
+console.log('resData->'+resData);
+  // ライブラリの TransactionManager が返す status をチェック
+    if (resData.status === 'error') {
+      throw new Error(resData.message || 'スプレッドシートの更新に失敗しました');
+    }
+    console.log('同期成功:', resData.data);
   } catch (error) {
     console.error('Error syncing ingredients to Google Spreadsheet:', error);
     throw error;
