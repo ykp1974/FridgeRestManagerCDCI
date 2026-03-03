@@ -15,6 +15,7 @@ function App() {
   const [fetchedCategories, setFetchedCategories] = useState<FetchedCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialLoading, setIsInitialLoading] = useState(false); // 読み込み中フラグ
+  const [loadingMessage, setLoadingMessage] = useState('読み込み中...');
 
   const [msg, setMsg] = useState('');
     const showMsg = (text: string) => {
@@ -61,7 +62,8 @@ function App() {
     };
     const addedIngredient = addIngredient(newIngredient);
     if (addedIngredient) {
-      setFilterCategory(addedIngredient.category);
+      // setFilterCategory(addedIngredient.category);
+      setFilterCategory('すべて');
       return true;
     }
     return false;
@@ -128,6 +130,10 @@ function App() {
             onRemove={removeIngredient} 
             setIngredients={setIngredients} 
             showMsg={showMsg}
+            setGlobalLoading={(loading: boolean, message?: string) => {
+              if (message) setLoadingMessage(message); // メッセージがあれば更新
+                setIsInitialLoading(loading);
+              }}
           />
         </div>
         <IngredientForm 
@@ -146,7 +152,8 @@ function App() {
                 className="w-32 h-32 mb-4"
               />
               <p className="text-gray-600 font-bold animate-pulse">
-                スプレッドシートから最新情報を取得中...
+                {/* スプレッドシートから最新情報を取得中... */}
+                {loadingMessage} {/* ← 固定文字から変数に変更 */}
               </p>
             </div>
           </div>

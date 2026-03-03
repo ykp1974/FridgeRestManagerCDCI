@@ -13,9 +13,10 @@ interface IngredientListProps {
   // ここを (data: Ingredient[]) => void にして、フックの関数と型を合わせます
   setIngredients: (ingredients: Ingredient[]) => void;
   showMsg: (text: string) => void;
+  setGlobalLoading: (loading: boolean, message?: string) => void;
 }
 
-export function IngredientList({ ingredients, onRemove, setIngredients, showMsg }: IngredientListProps) {
+export function IngredientList({ ingredients, onRemove, setIngredients, showMsg, setGlobalLoading }: IngredientListProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSyncing, setIsSyncing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,19 +26,21 @@ export function IngredientList({ ingredients, onRemove, setIngredients, showMsg 
   // const { ingredients: storedIngredients } = useLocalStorage();
 
   const handleSync = async () => {
+    setGlobalLoading(true, 'スプレッドシートに保存中.S..'); // ★ ここで猫モーダルをONにする
     setIsSyncing(true);
     setSyncError(null);
     try {
       // await syncIngredientsToSpreadsheet(storedIngredients);
       await syncIngredientsToSpreadsheet(ingredients);
 
-      showMsg('アイテムがスプレッドシートに正常に同期されました。');
+      showMsg('アイテムがスプレッドシートに正常に保存されました。');
       
     } catch (error) {
       console.error('同期エラー:', error);
-      setSyncError('アイテムのスプレッドシートへの同期に失敗しました。');
+      setSyncError('アイテムのスプレッドシートへの保存に失敗しました。');
     } finally {
       setIsSyncing(false);
+      setGlobalLoading(false); // ★ 猫モーダルをOFFにする
     }
   };
 
@@ -45,7 +48,7 @@ export function IngredientList({ ingredients, onRemove, setIngredients, showMsg 
     if (!confirm('スプレッドシートから最新データを読み込みますか？\n現在のリストは上書きされます。')) {
       return;
     }
-
+    setGlobalLoading(true, '最新のアイテムデータを取得中...');
     setIsLoading(true);
     setSyncError(null);
     try {
@@ -59,6 +62,7 @@ export function IngredientList({ ingredients, onRemove, setIngredients, showMsg 
       console.error('読み込みエラー:', error);
       setSyncError('スプレッドシートからの読み込みに失敗しました。');
     } finally {
+      setGlobalLoading(false);
       setIsLoading(false);
     }
   };
