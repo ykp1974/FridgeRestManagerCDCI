@@ -81,7 +81,7 @@ function App() {
   }, [ingredients, filterCategory]);
 
   const ingredientFormCategories = useMemo(() => {
-    return fetchedCategories.length > 0 ? fetchedCategories.map(cat => cat.name) : ['伝言'];
+    return fetchedCategories.length > 0 ? fetchedCategories.map(cat => cat.name) : ['TODO'];
   }, [fetchedCategories]);
 
   return (
